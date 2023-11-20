@@ -26,3 +26,14 @@ describe("/api/topics", () => {
       });
   });
 });
+
+describe("ANY /invalidPath", () => {
+  test("404: responds with an error message if path is not found", () => {
+    return request(app)
+      .get("/invalidPath")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Path Not Found");
+      });
+  });
+});
