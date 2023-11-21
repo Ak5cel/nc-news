@@ -151,10 +151,41 @@ describe("/api/articles/:article_id/comments", () => {
         });
       });
   });
-  test.todo("GET:200 comments are sorted in descending order of created_at by default");
-  test.todo("GET:200 responds with an empty array for an existing article_id that has no comments");
-  test.todo("GET:400 responds with an error msg when given an invalid article_id");
-  test.todo("GET:404 responds with an error msg when given a valid but non-existent article_id");
+  test("GET:200 comments are sorted in descending order of created_at by default", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const comments = body.comments;
+        expect(comments).toHaveLength(11);
+        expect(comments).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+  test("GET:200 responds with an empty array for an existing article_id that has no comments", () => {
+    return request(app)
+      .get("/api/articles/2/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const comments = body.comments;
+        expect(comments).toHaveLength(0);
+      });
+  });
+  test("GET:400 responds with an error msg when given an invalid article_id", () => {
+    return request(app)
+      .get("/api/articles/banana/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+  test("GET:404 responds with an error msg when given a valid but non-existent article_id", () => {
+    return request(app)
+      .get("/api/articles/77/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("article does not exist");
+      });
+  });
 });
 
 describe("ANY /invalidPath", () => {
