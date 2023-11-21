@@ -39,6 +39,58 @@ describe("/api/topics", () => {
   });
 });
 
+describe("/api/articles", () => {
+  test("GET:200 sends an array of all articles to the client", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+
+        expect(articles).toHaveLength(13);
+
+        articles.forEach((article) => {
+          expect(article).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: expect.any(Number),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number),
+            article_img_url: expect.any(String),
+            comment_count: expect.any(Number),
+          });
+          expect(article).not.toHaveProperty("body");
+        });
+      });
+  });
+  test("GET:200 response array is sorted by date in descending order by default", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+
+        expect(articles).toHaveLength(13);
+        expect(articles).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+  test("GET:200 comment_count of each article is calculated correctly", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+
+        // check expected comment_count of top 3 articles from the response
+        const [article_3, article_6, article_2] = articles;
+        expect(article_3.comment_count).toBe(2);
+        expect(article_6.comment_count).toBe(1);
+        expect(article_2.comment_count).toBe(0);
+      });
+  });
+});
+
 describe("/api/articles/:article_id", () => {
   test("GET:200 sends a single article to the client", () => {
     return request(app)
