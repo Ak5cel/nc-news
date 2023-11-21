@@ -77,6 +77,34 @@ describe("/api/articles/:article_id", () => {
   });
 });
 
+describe("/api/articles/:article_id/comments", () => {
+  test("GET:200 sends an array of comments belonging to the given article_id to the client", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const comments = body.comments;
+
+        expect(comments).toHaveLength(11);
+
+        comments.forEach((comment) => {
+          expect(comment).toMatchObject({
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            article_id: 1,
+          });
+        });
+      });
+  });
+  test.todo("GET:200 comments are sorted in descending order of created_at by default");
+  test.todo("GET:200 responds with an empty array for an existing article_id that has no comments");
+  test.todo("GET:400 responds with an error msg when given an invalid article_id");
+  test.todo("GET:404 responds with an error msg when given a valid but non-existent article_id");
+});
+
 describe("ANY /invalidPath", () => {
   test("404: responds with an error message if path is not found", () => {
     return request(app)
