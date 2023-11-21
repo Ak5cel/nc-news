@@ -129,6 +129,65 @@ describe("/api/articles/:article_id", () => {
   });
 });
 
+describe("/api/articles/:article_id/comments", () => {
+  test("GET:200 sends an array of comments belonging to the given article_id to the client", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const comments = body.comments;
+
+        expect(comments).toHaveLength(11);
+
+        comments.forEach((comment) => {
+          expect(comment).toMatchObject({
+            comment_id: expect.any(Number),
+            votes: expect.any(Number),
+            created_at: expect.any(String),
+            author: expect.any(String),
+            body: expect.any(String),
+            article_id: 1,
+          });
+        });
+      });
+  });
+  test("GET:200 comments are sorted in descending order of created_at by default", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const comments = body.comments;
+        expect(comments).toHaveLength(11);
+        expect(comments).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+  test("GET:200 responds with an empty array for an existing article_id that has no comments", () => {
+    return request(app)
+      .get("/api/articles/2/comments")
+      .expect(200)
+      .then(({ body }) => {
+        const comments = body.comments;
+        expect(comments).toHaveLength(0);
+      });
+  });
+  test("GET:400 responds with an error msg when given an invalid article_id", () => {
+    return request(app)
+      .get("/api/articles/banana/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+  test("GET:404 responds with an error msg when given a valid but non-existent article_id", () => {
+    return request(app)
+      .get("/api/articles/77/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("article does not exist");
+      });
+  });
+});
+
 describe("ANY /invalidPath", () => {
   test("404: responds with an error message if path is not found", () => {
     return request(app)
