@@ -39,6 +39,44 @@ describe("/api/topics", () => {
   });
 });
 
+describe("/api/articles/:article_id", () => {
+  test("GET:200 sends a single article to the client", () => {
+    return request(app)
+      .get("/api/articles/3")
+      .expect(200)
+      .then(({ body }) => {
+        const article = body.article;
+        expect(article).toMatchObject({
+          article_id: 3,
+          title: "Eight pug gifs that remind me of mitch",
+          topic: "mitch",
+          author: "icellusedkars",
+          created_at: new Date(1604394720000).toJSON(),
+          body: "some gifs",
+          votes: 0,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        });
+      });
+  });
+  test("GET:404 responds with an appropriate status and error msg when given a valid but non-existent id", () => {
+    return request(app)
+      .get("/api/articles/77")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("article does not exist");
+      });
+  });
+  test("GET:400 responds with an appropriate status and error msg when given an invalid id", () => {
+    return request(app)
+      .get("/api/articles/banana")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+});
+
 describe("ANY /invalidPath", () => {
   test("404: responds with an error message if path is not found", () => {
     return request(app)
