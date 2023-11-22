@@ -45,6 +45,31 @@
       ]
     }
   },
+  "PATCH /api/articles/:article_id": {
+    "description": "updates (increments/decrements) the number of votes on the specified article by the given number and responds with the updated article",
+    "queries": [],
+    "requestBody": {
+      "requiredFields": ["inc_votes"],
+      "optionalFields": [],
+      "exampleRequestBody": {
+        "inc_votes": 100
+      }
+    },
+    "exampleResponse": {
+      "article": [
+        {
+          "article_id": 3,
+          "title": "Eight pug gifs that remind me of mitch",
+          "topic": "mitch",
+          "author": "icellusedkars",
+          "body": "some gifs",
+          "created_at": "2020-11-03T09:12:00.000Z",
+          "votes": 100,
+          "article_img_url": "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700"
+        }
+      ]
+    }
+  },
   "GET /api/articles/:article_id/comments": {
     "description": "responds with an array of the comments on the specified article (if it exists)",
     "queries": [],
