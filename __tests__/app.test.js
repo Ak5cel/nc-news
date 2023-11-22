@@ -127,6 +127,91 @@ describe("/api/articles/:article_id", () => {
         expect(body.msg).toBe("Bad Request");
       });
   });
+  test("PATCH:200 updates the number of votes on the specified article and sends the updated article to the client", () => {
+    return request(app)
+      .patch("/api/articles/3")
+      .send({ inc_votes: 7 })
+      .expect(200)
+      .then(({ body }) => {
+        const article = body.article;
+        expect(article).toMatchObject({
+          article_id: 3,
+          title: "Eight pug gifs that remind me of mitch",
+          topic: "mitch",
+          author: "icellusedkars",
+          created_at: new Date(1604394720000).toJSON(),
+          body: "some gifs",
+          votes: 7,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        });
+      });
+  });
+  test("PATCH:200 decrements the number of votes on the specified article if inc_votes is negative", () => {
+    return request(app)
+      .patch("/api/articles/3")
+      .send({ inc_votes: -7 })
+      .expect(200)
+      .then(({ body }) => {
+        const article = body.article;
+        expect(article).toMatchObject({
+          article_id: 3,
+          title: "Eight pug gifs that remind me of mitch",
+          topic: "mitch",
+          author: "icellusedkars",
+          created_at: new Date(1604394720000).toJSON(),
+          body: "some gifs",
+          votes: -7,
+          article_img_url:
+            "https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700",
+        });
+      });
+  });
+  test("PATCH:400 responds with an error msg when given a badly-formed request (missing inc_votes)", () => {
+    return request(app)
+      .patch("/api/articles/3")
+      .send({})
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+  test("PATCH:400 responds with an error msg when given a badly-formed request (inc_votes is not a number)", () => {
+    return request(app)
+      .patch("/api/articles/3")
+      .send({ inc_votes: "notANumber" })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+  test("PATCH:400 responds with an error msg when given a badly-formed request (inc_votes is not an integer)", () => {
+    return request(app)
+      .patch("/api/articles/3")
+      .send({ inc_votes: 7.7 })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+  test("PATCH:400 responds with an error msg when given an invalid article_id", () => {
+    return request(app)
+      .patch("/api/articles/banana")
+      .send({ inc_votes: 7 })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+  test("PATCH:404 responds with an error msg when given a valid but non-existent article_id", () => {
+    return request(app)
+      .patch("/api/articles/777")
+      .send({ inc_votes: 7 })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("article does not exist");
+      });
+  });
 });
 
 describe("/api/articles/:article_id/comments", () => {
