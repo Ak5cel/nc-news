@@ -186,6 +186,91 @@ describe("/api/articles/:article_id/comments", () => {
         expect(body.msg).toBe("article does not exist");
       });
   });
+  test("POST:201 posts a new comment at the article given and sends the new comment back to the client", () => {
+    const newComment = {
+      username: "icellusedkars",
+      body: "listening to Epik High as it rains",
+    };
+    return request(app)
+      .post("/api/articles/7/comments")
+      .send(newComment)
+      .expect(201)
+      .then(({ body }) => {
+        const comment = body.comment;
+
+        expect(comment).toMatchObject({
+          comment_id: 19,
+          body: "listening to Epik High as it rains",
+          article_id: 7,
+          author: "icellusedkars",
+          votes: 0,
+          created_at: expect.any(String),
+        });
+      });
+  });
+  test("POST:400 responds with an error msg when given a badly-formed comment (no username)", () => {
+    const newComment = {
+      body: "listening to Epik High as it rains",
+    };
+    return request(app)
+      .post("/api/articles/7/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+  test("POST:400 responds with an error msg when given a badly-formed comment (no body)", () => {
+    const newComment = {
+      username: "icellusedkars",
+    };
+    return request(app)
+      .post("/api/articles/7/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+  test("POST:404 responds with an error msg when referencing a username that does not exist", () => {
+    const newComment = {
+      username: "notAUser",
+      body: "listening to Epik High as it rains",
+    };
+    return request(app)
+      .post("/api/articles/7/comments")
+      .send(newComment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Referenced Entity Not Found");
+      });
+  });
+  test("POST:404 responds with an error msg when given a valid but non-existent article_id", () => {
+    const newComment = {
+      username: "icellusedkars",
+      body: "listening to Epik High as it rains",
+    };
+    return request(app)
+      .post("/api/articles/777/comments")
+      .send(newComment)
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("article does not exist");
+      });
+  });
+  test("POST:400 responds with an error msg when given an invalid article_id", () => {
+    const newComment = {
+      username: "icellusedkars",
+      body: "listening to Epik High as it rains",
+    };
+    return request(app)
+      .post("/api/articles/banana/comments")
+      .send(newComment)
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
 });
 
 describe("ANY /invalidPath", () => {
