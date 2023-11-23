@@ -1,7 +1,7 @@
 const db = require("../db/connection.js");
 
-exports.selectArticles = () => {
-  const queryString = `
+exports.selectArticles = ({ topic }) => {
+  let queryString = `
   SELECT 
     articles.article_id, 
     articles.author, 
@@ -13,11 +13,19 @@ exports.selectArticles = () => {
     COUNT(comments.comment_id)::INT as comment_count
   FROM articles LEFT JOIN comments
     ON articles.article_id = comments.article_id
-  GROUP BY articles.article_id
-  ORDER BY articles.created_at DESC;
+  GROUP BY articles.article_id 
   `;
 
-  return db.query(queryString).then(({ rows }) => {
+  const queryValues = [];
+
+  if (topic) {
+    queryString += "HAVING articles.topic = $1 ";
+    queryValues.push(topic);
+  }
+
+  queryString += `ORDER BY articles.created_at DESC `;
+
+  return db.query(queryString, queryValues).then(({ rows }) => {
     return rows;
   });
 };
