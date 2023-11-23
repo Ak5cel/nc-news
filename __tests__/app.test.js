@@ -358,6 +358,33 @@ describe("/api/articles/:article_id/comments", () => {
   });
 });
 
+describe("/api/comments/:comment_id", () => {
+  test("DELETE:204 deletes the specified comment and sends no body back", () => {
+    return request(app)
+      .delete("/api/comments/1")
+      .expect(204)
+      .then(({ body }) => {
+        expect(body).toEqual({});
+      });
+  });
+  test("DELETE:404 responds with an error msg when given a valid but non-existent comment_id", () => {
+    return request(app)
+      .delete("/api/comments/777")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("comment does not exist");
+      });
+  });
+  test("DELETE:400 responds with an error msg when given an invalid comment_id", () => {
+    return request(app)
+      .delete("/api/comments/banana")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+});
+
 describe("/api/users", () => {
   test("GET:200 sends an array of all users to the client", () => {
     return request(app)

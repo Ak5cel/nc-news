@@ -26,3 +26,17 @@ exports.insertComment = (newComment) => {
     return rows[0];
   });
 };
+
+exports.removeCommentById = (comment_id) => {
+  const queryString = `
+  DELETE FROM comments
+  WHERE comment_id=$1
+  RETURNING *;
+  `;
+
+  return db.query(queryString, [comment_id]).then(({ rows }) => {
+    if (!rows.length) {
+      return Promise.reject({ status: 404, msg: "comment does not exist" });
+    }
+  });
+};

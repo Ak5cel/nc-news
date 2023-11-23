@@ -110,6 +110,11 @@
       ]
     }
   },
+  "DELETE /api/comments/:comment_id": {
+    "description": "deletes the specified comment (if it exists) and sends no body back",
+    "queries": [],
+    "exampleResponse": {}
+  },
   "GET /api/users": {
     "description": "serves an array of all users",
     "queries": [],
