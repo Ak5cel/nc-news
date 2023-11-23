@@ -31,7 +31,17 @@ exports.selectArticles = ({ topic }) => {
 };
 
 exports.selectArticleById = (article_id) => {
-  return db.query("SELECT * FROM articles WHERE article_id=$1;", [article_id]).then(({ rows }) => {
+  const queryString = `
+  SELECT 
+    articles.*, 
+    COUNT(comments.comment_id)::INT as comment_count
+  FROM articles LEFT JOIN comments
+    ON articles.article_id = comments.article_id
+  GROUP BY articles.article_id
+  HAVING articles.article_id = $1;
+  `;
+
+  return db.query(queryString, [article_id]).then(({ rows }) => {
     if (!rows.length) {
       return Promise.reject({ status: 404, msg: "article does not exist" });
     }

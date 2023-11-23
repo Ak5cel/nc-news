@@ -141,6 +141,26 @@ describe("/api/articles/:article_id", () => {
         });
       });
   });
+  test("GET:200 sends the article with correctly calculated comment_count if it has comments", () => {
+    return request(app)
+      .get("/api/articles/1")
+      .expect(200)
+      .then(({ body }) => {
+        const article = body.article;
+
+        expect(article).toHaveProperty("comment_count", 11);
+      });
+  });
+  test("GET:200 sends the article with comment_count set to 0 if it has no comments", () => {
+    return request(app)
+      .get("/api/articles/2")
+      .expect(200)
+      .then(({ body }) => {
+        const article = body.article;
+
+        expect(article).toHaveProperty("comment_count", 0);
+      });
+  });
   test("GET:404 responds with an appropriate status and error msg when given a valid but non-existent id", () => {
     return request(app)
       .get("/api/articles/77")
