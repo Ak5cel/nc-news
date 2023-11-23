@@ -89,6 +89,36 @@ describe("/api/articles", () => {
         expect(article_2.comment_count).toBe(0);
       });
   });
+  test("GET:200 accepts a topic query and responds with an array of articles with the given topic", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+
+        expect(articles).toHaveLength(12);
+
+        articles.forEach((article) => {
+          expect(article).toHaveProperty("topic", "mitch");
+        });
+      });
+  });
+  test("GET:200 responds with an empty array when passed a query for an existing topic with no articles", () => {
+    return request(app)
+      .get("/api/articles?topic=paper")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toEqual([]);
+      });
+  });
+  test("GET:404 responds with an error msg when passed a query for a non-existent topic", () => {
+    return request(app)
+      .get("/api/articles?topic=banana")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("topic does not exist");
+      });
+  });
 });
 
 describe("/api/articles/:article_id", () => {
