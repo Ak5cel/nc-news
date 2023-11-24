@@ -524,6 +524,31 @@ describe("/api/users", () => {
   });
 });
 
+describe("/api/users/:username", () => {
+  test("GET:200 sends a single user to the client", () => {
+    return request(app)
+      .get("/api/users/icellusedkars")
+      .expect(200)
+      .then(({ body }) => {
+        const user = body.user;
+
+        expect(user).toMatchObject({
+          username: "icellusedkars",
+          name: "sam",
+          avatar_url: "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4",
+        });
+      });
+  });
+  test("GET:404 responds with an error msg when passed a non-existent username", () => {
+    return request(app)
+      .get("/api/users/notAUser")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("user does not exist");
+      });
+  });
+});
+
 describe("ANY /invalidPath", () => {
   test("404: responds with an error message if path is not found", () => {
     return request(app)
