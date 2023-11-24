@@ -2,9 +2,9 @@ const { selectArticleById, selectArticles, updateArticleById } = require("../mod
 const { checkTopicExists } = require("../models/topics.models");
 
 exports.getArticles = (req, res, next) => {
-  const { topic } = req.query;
+  const { topic, sort_by, order } = req.query;
 
-  const promises = [selectArticles({ topic })];
+  const promises = [selectArticles({ topic, sort_by, order })];
 
   if (topic) {
     promises.push(checkTopicExists(topic));

@@ -119,6 +119,74 @@ describe("/api/articles", () => {
         expect(body.msg).toBe("topic does not exist");
       });
   });
+  test("GET:200 accepts a sort_by query and responds with an array of articles sorted by that column (in desc order by default)", () => {
+    return request(app)
+      .get("/api/articles?sort_by=votes")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+
+        expect(articles).toHaveLength(13);
+        expect(articles).toBeSortedBy("votes", { descending: true, coerce: true });
+      });
+  });
+  test("GET:200 accepts a request with sort_by=comment_count", () => {
+    return request(app)
+      .get("/api/articles?sort_by=comment_count")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+
+        expect(articles).toHaveLength(13);
+        expect(articles).toBeSortedBy("comment_count", { descending: true, coerce: true });
+      });
+  });
+  test("GET:400 responds with an error msg if sort_by is an existing column but not a field in the response (eg. `body`)", () => {
+    return request(app)
+      .get("/api/articles?sort_by=body")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+  test("GET:400 responds with an error msg if the user enters an invalid sort_by field", () => {
+    return request(app)
+      .get("/api/articles?sort_by=banana")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+  test("GET:200 accepts an order query and responds with an array of articles sorted in that order (sorted by `created_at` by default)", () => {
+    return request(app)
+      .get("/api/articles?order=asc")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+
+        expect(articles).toHaveLength(13);
+        expect(articles).toBeSortedBy("created_at");
+      });
+  });
+  test("GET:200 accepts a combination of topic, sort_by and order queries", () => {
+    return request(app)
+      .get("/api/articles?topic=mitch&sort_by=author&order=asc")
+      .expect(200)
+      .then(({ body }) => {
+        const articles = body.articles;
+
+        expect(articles).toHaveLength(12);
+        expect(articles).toBeSortedBy("author");
+      });
+  });
+  test("GET:400 responds with an error msg when passed an invalid order query", () => {
+    return request(app)
+      .get("/api/articles?order=banana")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
 });
 
 describe("/api/articles/:article_id", () => {
