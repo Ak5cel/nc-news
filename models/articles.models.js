@@ -1,6 +1,6 @@
 const db = require("../db/connection.js");
 
-exports.selectArticles = ({ topic, sort_by = "created_at" }) => {
+exports.selectArticles = ({ topic, sort_by = "created_at", order = "desc" }) => {
   let queryString = `
   SELECT 
     articles.article_id, 
@@ -34,15 +34,17 @@ exports.selectArticles = ({ topic, sort_by = "created_at" }) => {
     "comment_count",
   ];
 
-  if (!validSortByColumns.includes(sort_by)) {
-    return Promise.reject({ status: 400, msg: "Bad Request" });
-  } else {
-    if (sort_by !== "comment_count") {
-      sort_by = `articles.${sort_by}`;
-    }
+  const validOrderQueries = ["asc", "desc"];
 
-    queryString += `ORDER BY ${sort_by} DESC `;
+  if (!validSortByColumns.includes(sort_by) || !validOrderQueries.includes(order)) {
+    return Promise.reject({ status: 400, msg: "Bad Request" });
   }
+
+  if (sort_by !== "comment_count") {
+    sort_by = `articles.${sort_by}`;
+  }
+
+  queryString += `ORDER BY ${sort_by} ${order} `;
 
   return db.query(queryString, queryValues).then(({ rows }) => {
     return rows;
