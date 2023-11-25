@@ -111,6 +111,29 @@
       ]
     }
   },
+  "PATCH /api/comments/:comment_id": {
+    "description": "updates (increments/decrements) the number of votes on the specified comment by the given number and responds with the updated comment",
+    "queries": [],
+    "requestBody": {
+      "requiredFields": ["inc_votes"],
+      "optionalFields": [],
+      "exampleRequestBody": {
+        "inc_votes": 100
+      }
+    },
+    "exampleResponse": {
+      "comment": [
+        {
+          "comment_id": 8,
+          "body": "Lobster pot",
+          "article_id": 1,
+          "author": "icellusedkars",
+          "votes": 100,
+          "created_at": "2020-05-15T21:19:00.000Z"
+        }
+      ]
+    }
+  },
   "DELETE /api/comments/:comment_id": {
     "description": "deletes the specified comment (if it exists) and sends no body back",
     "queries": [],
