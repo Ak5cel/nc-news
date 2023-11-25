@@ -6,7 +6,7 @@
   "scripts": {
     "setup-dbs": "psql -f ./db/setup.sql",
     "seed": "node ./db/seeds/run-seed.js",
-    "test": "TZ=UTC jest",
+    "test": "TZ=UTC jest --coverage",
     "dev": "TZ=UTC node listen.js",
     "prepare": "husky install",
     "start": "node listen.js",
