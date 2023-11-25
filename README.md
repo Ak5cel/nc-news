@@ -1,5 +1,9 @@
 # Northcoders News API
 
+[![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=flat&logo=node.js&logoColor=white)](https://nodejs.org)
+[![Express.js](https://img.shields.io/badge/express.js-%23404d59.svg?style=flat&logo=express&logoColor=%2361DAFB)](https://expressjs.com)
+[![codecov](https://codecov.io/gh/Ak5cel/nc-news/graph/badge.svg?token=LKKE9VC0FE)](https://codecov.io/gh/Ak5cel/nc-news)
+
 A simple news API complete with topics, articles, users, comments, and some sample data to get started. Part of a backend project to learn more about building REST APIs using Express.js, interacting with postgres databases and CRUD operations, error handling, TDD, and best practices.
 
 ## It's now live! 🚀
