@@ -23,7 +23,7 @@ jobs:
           postgresql user: test_user
           postgresql password: password
       - name: Run complete test suite
-        run: PGDATABASE=nc_news_test PGUSER=test_user PGPASSWORD=password npm run test
+        run: PGDATABASE=nc_news_test PGUSER=test_user PGPASSWORD=password npm run test-with-cov
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
         env:
