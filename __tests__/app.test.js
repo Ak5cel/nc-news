@@ -501,6 +501,79 @@ describe("/api/comments/:comment_id", () => {
         expect(body.msg).toBe("Bad Request");
       });
   });
+  test("PATCH:200 updates the number of votes on the specified comment and sends the updated comment to the client", () => {
+    return request(app)
+      .patch("/api/comments/7")
+      .send({ inc_votes: 100 })
+      .expect(200)
+      .then(({ body }) => {
+        const comment = body.comment;
+
+        expect(comment).toMatchObject({
+          comment_id: 7,
+          votes: 100,
+          created_at: new Date(1589577540000).toJSON(),
+          author: "icellusedkars",
+          body: "Lobster pot",
+          article_id: 1,
+        });
+      });
+  });
+  test("PATCH:200 decrements the number of votes on the specified comment if inc_votes is negative", () => {
+    return request(app)
+      .patch("/api/comments/7")
+      .send({ inc_votes: -100 })
+      .expect(200)
+      .then(({ body }) => {
+        const comment = body.comment;
+        expect(comment).toHaveProperty("votes", -100);
+      });
+  });
+  test("PATCH:400 responds with an error msg when given a badly-formed request (missing inc_votes)", () => {
+    return request(app)
+      .patch("/api/comments/7")
+      .send({})
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+  test("PATCH:400 responds with an error msg when given a badly-formed request (inc_votes is not a number)", () => {
+    return request(app)
+      .patch("/api/comments/7")
+      .send({ inc_votes: "notANumber" })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+  test("PATCH:400 responds with an error msg when given a badly-formed request (inc_votes is not an integer)", () => {
+    return request(app)
+      .patch("/api/comments/7")
+      .send({ inc_votes: 7.7 })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+  test("PATCH:400 responds with an error msg when given an invalid comment_id", () => {
+    return request(app)
+      .patch("/api/comments/banana")
+      .send({ inc_votes: 7 })
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad Request");
+      });
+  });
+  test("PATCH:404 responds with an error msg when given a valid but non-existent comment_id", () => {
+    return request(app)
+      .patch("/api/comments/777")
+      .send({ inc_votes: 7 })
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("comment does not exist");
+      });
+  });
 });
 
 describe("/api/users", () => {
